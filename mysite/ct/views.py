@@ -1039,10 +1039,24 @@ def error_resources(request, course_id, unit_id, ul_id):
 @login_required
 def study_unit(request, course_id, unit_id):
     unit = get_object_or_404(Unit, pk=unit_id)
+    course = get_object_or_404(Course, pk=course_id)
+    user = get_object_or_404(User, username=request.user)
     unitStatus = None
     pageData = PageData(request, title=unit.title)
     startForm = push_button(request)
     if not startForm: # user clicked Start
+        newStartForm = StartForm(request.POST)
+        if newStartForm.is_valid():
+            newStartForm.save()
+        print(request.POST)
+        clean_data = newStartForm.clean()
+        age = clean_data['age']
+        field = clean_data['field']
+        study_level = clean_data['study_level']
+        knowledge_level = 100   #clean_data['knowledge_level']
+        userAttributes = UserAttributes(age=age, field=field, study_level=study_level, knowledge_level=knowledge_level, user=user, course=course)
+        userAttributes.save()
+        print(str(age) + " " + str(field) + " " + str(study_level) + " ")
         return pageData.fsm_push(request, 'lessonseq', dict(unit=unit))
     if unitStatus:
         nextUL = unitStatus.get_lesson()

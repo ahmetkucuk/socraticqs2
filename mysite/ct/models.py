@@ -1395,3 +1395,17 @@ class ActivityEvent(models.Model):
         self.endTime = timezone.now()
         self.save()
 
+
+##############################################################################
+#Context Database for Users
+
+class UserAttributes(models.Model):
+    age = models.IntegerField(max_length=10)
+    field = models.CharField(max_length=10, default="Unknown")
+    study_level = models.CharField(max_length=10, default="Unknown")
+    knowledge_level = models.IntegerField(max_length=10)
+    course = models.ForeignKey(Course)
+    user = models.ForeignKey(User)
+    atime = models.DateTimeField('time submitted', default=timezone.now)
+
+

@@ -1,5 +1,5 @@
 from django import forms
-from ct.models import Response, Course, Unit, Concept, Lesson, ConceptLink, ConceptGraph, STATUS_CHOICES, StudentError
+from ct.models import Response, Course, Unit, Concept, Lesson, ConceptLink, ConceptGraph, STATUS_CHOICES, StudentError, UserAttributes
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
@@ -92,8 +92,24 @@ class NextForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Next'))
     
 
-class StartForm(forms.Form):
+class StartForm(forms.ModelForm):
     task = forms.CharField(initial='start', widget=forms.HiddenInput)
+    study_level = forms.ChoiceField(
+        choices = (
+            ('bachelor_student', "Bachelor Student"),
+            ('bachelor', "Bachelor Degree"),
+            ('master', 'Master Degree'),
+            ('phd', 'Enrolled PhD')
+        ),
+        initial = 'option_one',
+        widget = forms.RadioSelect,
+        label = "Select your study"
+    )
+    knowledge_level = forms.MultipleChoiceField(
+        choices = (('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')),
+        widget = forms.RadioSelect,
+        label = "Rate your knowledge on this topic"
+    )
     def __init__(self, *args, **kwargs):
         super(StartForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -101,6 +117,10 @@ class StartForm(forms.Form):
         self.helper.form_class = 'form-vertical'
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Start'))
+    class Meta:
+        model = UserAttributes
+        fields = ['age', 'field']
+
     
 
 class QuitForm(forms.Form):
